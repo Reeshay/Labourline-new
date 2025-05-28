@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LaborLine | Client Dashboard with Chat & Feedback</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Noto+Naskh+Arabic&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f7fdfa;
+    color: #0a3d2d;
+    min-height: 100vh;
+    padding: 1rem 2rem 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  header h1 {
+    font-weight: 700;
+    font-size: 2.4rem;
+    color: #064d34;
+  }
+
+  header p {
+    font-weight: 400;
+    font-size: 1.1rem;
+    color: #29664a;
+    max-width: 600px;
+  }
+
+  /* Filters container */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    max-width: 220px;
+  }
+
+  .filter-group label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #29664a;
+  }
+
+  select,
+  input[type="range"],
+  input[type="number"],
+  textarea {
+    border-radius: 10px;
+    border: 1.5px solid #cdf0dc;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    outline-offset: 2px;
+    color: #064d34;
+    background: white;
+    transition: border-color 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  select:focus,
+  input[type="range"]:focus,
+  input[type="number"]:focus,
+  textarea:focus {
+    border-color: #14814b;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    height: 8px;
+    background: #cdf0dc;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #0a3d2d;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -6px;
+  }
+
+  /* Workers List */
+  #workers-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
+    gap: 1.5rem;
+  }
+
+  .worker-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 8px 18px rgba(10, 61, 45, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 300px;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .worker-card:hover {
+    box-shadow: 0 14px 28px rgba(10, 61, 45, 0.3);
+  }
+
+  .worker-name {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #064d34;
+    margin-bottom: 0.3rem;
+  }
+
+  .worker-skill-category {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #0a3d2d;
+    margin-bottom: 0.4rem;
+  }
+
+  .worker-rating {
+    font-weight: 600;
+    color: #146d32;
+    margin-bottom: 0.4rem;
+  }
+
+  .worker-price,
+  .worker-availability,
+  .worker-distance {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    color: #29664a;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+  }
+
+  .action-button {
+    background-color: #0a3d2d;
+    color: white;
+    border: none;
+    padding: 0.7rem 1rem;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(10, 61, 45, 0.3);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    flex: 1 1 45%;
+  }
+
+  .action-button:hover,
+  .action-button:focus {
+    background-color: #14814b;
+    box-shadow: 0 8px 16px rgba(20, 129, 75, 0.5);
+    outline: none;
+  }
+
+  /* Language Toggle */
+  .language-toggle {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .language-toggle button {
+    background: none;
+    border: none;
+    color: #0a3d2d;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+
+  .language-toggle button:hover,
+  .language-toggle button:focus {
+    background-color: #cdf0dc;
+    outline: none;
+  }
+
+  /* No results message */
+  #no-results {
+    color: #bf3d3d;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 3rem;
+  }
+
+  /* Modal background */
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(10, 61, 45, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .modal-bg.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Modal container */
+  .modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 420px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.5rem 2rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #064d34;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #bf3d3d;
+    line-height: 1;
+  }
+  .modal-close:hover,
+  .modal-close:focus {
+    color: #8c2727;
+    outline: none;
+  }
+
+  /* Chat messages container */
+  .chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1.5px solid #cdf0dc;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    background-color: #f0fff4;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    color: #064d34;
+  }
+
+  .message {
+    margin-bottom: 0.7rem;
+    max-width: 85%;
+    padding: 0.4rem 0.6rem;
+    border-radius: 12px;
+    line-height: 1.3;
+    word-wrap: break-word;
+  }
+  .message.client {
+    background-color: #b8e2b8;
+    align-self: flex-start;
+  }
+  .message.worker {
+    background-color: #1a4f2b;
+    color: white;
+    align-self: flex-end;
+  }
+
+  /* Chat input form */
+  .chat-input-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .chat-input {
+    flex-grow: 1;
+    padding: 0.5rem 0.8rem;
+    border-radius: 12px;
+    border: 1.5px solid #cdf0dc;
+    font-size: 1rem;
+    outline-offset: 2px;
+    resize: none;
+  }
+
+  .chat-input:focus {
+    border-color: #14814b;
+  }
+
+  .chat-send {
+    background-color: #0a3d2d;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0 1.2rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 6px 12px rgba(10, 61, 45, 0.3);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .chat-send:hover,
+  .chat-send:focus {
+    background-color: #14814b;
+    box-shadow: 0 8px 16px rgba(20, 129, 75, 0.5);
+    outline: none;
+  }
+
+  /* Feedback form */
+  .feedback-section {
+    margin-top: 1rem;
+  }
+
+  .feedback-section label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .feedback-textarea {
+    width: 100%;
+    min-height: 70px;
+    border-radius: 12px;
+    border: 1.5px solid #cdf0dc;
+    padding: 0.6rem 1rem;
+    resize: vertical;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    outline-offset: 2px;
+  }
+  .feedback-textarea:focus {
+    border-color: #14814b;
+  }
+
+  .rating-inputs {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+  }
+
+  .rating-inputs label {
+    cursor: pointer;
+    font-weight: 700;
+    color: #0a3d2d;
+  }
+
+  .feedback-submit {
+    margin-top: 1rem;
+    background-color: #0a3d2d;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(10, 61, 45, 0.3);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .feedback-submit:hover,
+  .feedback-submit:focus {
+    background-color: #14814b;
+    box-shadow: 0 8px 16px rgba(20, 129, 75, 0.5);
+    outline: none;
+  }
+
+  .feedback-list {
+    margin-top: 1rem;
+    max-height: 120px;
+    overflow-y: auto;
+    border: 1.5px solid #cdf0dc;
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    background-color: #f0fff4;
+    font-size: 0.9rem;
+    color: #064d34;
+  }
+
+  .feedback-list-item {
+    border-bottom: 1px solid #a8d1a4;
+    padding: 0.3rem 0;
+  }
+  .feedback-list-item:last-child {
+    border-bottom: none;
+  }
+
+  /* Urdu styles */
+  [lang="ur"] {
+    font-family: 'Noto Naskh Arabic', serif;
+    direction: rtl;
+    text-align: right;
+    color: #064d34;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    body {
+      padding: 1rem;
+    }
+    .filters {
+      flex-direction: column;
+      max-width: 100%;
+    }
+    .filter-group {
+      min-width: 100%;
+    }
+    #workers-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <h1 id="title">LaborLine Client Dashboard</h1>
+  <p id="subtitle">Find and book trusted workers based on skills, rating, price, and availability near you.</p>
+</header>
+
+<section class="filters" aria-label="Filter workers">
+  <div class="filter-group">
+    <label for="filter-skill" id="label-filter-skill">Skill Category</label>
+    <select id="filter-skill" aria-labelledby="label-filter-skill">
+      <option value="">All Skills</option>
+      <option value="Plumbing">Plumbing</option>
+      <option value="Electrical">Electrical</option>
+      <option value="Carpentry">Carpentry</option>
+      <option value="Cleaning">Cleaning</option>
+      <option value="Painting">Painting</option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label for="filter-rating" id="label-filter-rating">Min Rating</label>
+    <select id="filter-rating" aria-labelledby="label-filter-rating">
+      <option value="">Any</option>
+      <option value="1">1 ★</option>
+      <option value="2">2 ★</option>
+      <option value="3">3 ★</option>
+      <option value="4">4 ★</option>
+      <option value="5">5 ★</option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label for="filter-price-max" id="label-filter-price-max">Max Price (PKR/hr)</label>
+    <input type="number" id="filter-price-max" aria-labelledby="label-filter-price-max" min="0" placeholder="No max" />
+  </div>
+
+  <div class="filter-group">
+    <label for="filter-availability" id="label-filter-availability">Availability</label>
+    <select id="filter-availability" aria-labelledby="label-filter-availability">
+      <option value="">Any</option>
+      <option value="Available">Available Now</option>
+      <option value="Busy">Busy</option>
+    </select>
+  </div>
+</section>
+
+<section id="workers-list" aria-live="polite" aria-relevant="additions removals">
+  <!-- worker cards injected here -->
+</section>
+
+<div id="no-results" hidden>No workers match your filters.</div>
+
+<div class="language-toggle">
+  <button id="toggle-lang" aria-label="Switch language to Urdu">اردو میں</button>
+</div>
+
+<!-- Chat & Feedback Modal -->
+<div id="modal-bg" class="modal-bg" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1" hidden>
+  <div class="modal" role="document">
+    <div class="modal-header">
+      <div id="modal-title">Chat with Worker</div>
+      <button class="modal-close" aria-label="Close modal">&times;</button>
+    </div>
+
+    <div id="chat-section" style="display: flex; flex-direction: column; height: 300px;">
+      <div class="chat-messages" id="chat-messages" tabindex="0" aria-live="polite" aria-relevant="additions"></div>
+
+      <form id="chat-form" class="chat-input-group" aria-label="Send a message">
+        <textarea id="chat-input" rows="2" placeholder="Type your message..." required aria-required="true"></textarea>
+        <button type="submit" class="chat-send" aria-label="Send message">Send</button>
+      </form>
+    </div>
+
+    <section class="feedback-section" aria-label="Submit feedback">
+      <label for="feedback-textarea">Leave feedback</label>
+      <textarea id="feedback-textarea" placeholder="Write your feedback here..." rows="3" aria-required="false"></textarea>
+      <div>
+        <label>Rating:</label>
+        <div class="rating-inputs" role="radiogroup" aria-label="Feedback rating">
+          <label><input type="radio" name="feedback-rating" value="1" /> 1</label>
+          <label><input type="radio" name="feedback-rating" value="2" /> 2</label>
+          <label><input type="radio" name="feedback-rating" value="3" /> 3</label>
+          <label><input type="radio" name="feedback-rating" value="4" /> 4</label>
+          <label><input type="radio" name="feedback-rating" value="5" checked /> 5</label>
+        </div>
+      </div>
+      <button id="feedback-submit" class="feedback-submit" aria-label="Submit feedback">Submit Feedback</button>
+
+      <div class="feedback-list" id="feedback-list" aria-live="polite" aria-relevant="additions removals" tabindex="0" aria-label="Worker feedback list"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const workers = [
+    {
+      id: 1,
+      name: "Ahmed Khan",
+      skill: "Plumbing",
+      rating: 4.8,
+      price: 500,
+      availability: "Available",
+      lat: 24.8607,
+      lng: 67.0011,
+    },
+    {
+      id: 2,
+      name: "Sara Malik",
+      skill: "Cleaning",
+      rating: 4.2,
+      price: 300,
+      availability: "Busy",
+      lat: 24.8715,
+      lng: 67.0361,
+    },
+    {
+      id: 3,
+      name: "Bilal Ahmad",
+      skill: "Electrical",
+      rating: 4.5,
+      price: 600,
+      availability: "Available",
+      lat: 24.8536,
+      lng: 67.0197,
+    },
+    {
+      id: 4,
+      name: "Amina Sheikh",
+      skill: "Carpentry",
+      rating: 4.9,
+      price: 550,
+      availability: "Available",
+      lat: 24.8647,
+      lng: 67.0206,
+    },
+    {
+      id: 5,
+      name: "Faisal Raza",
+      skill: "Painting",
+      rating: 3.9,
+      price: 400,
+      availability: "Busy",
+      lat: 24.8595,
+      lng: 67.0421,
+    }
+  ];
+
+  let userLocation = null;
+
+  // Utility: Calculate distance km using haversine formula
+  function getDistanceKm(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2)**2 +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  const workersListEl = document.getElementById('workers-list');
+  const noResultsEl = document.getElementById('no-results');
+
+  // Filter inputs
+  const filterSkill = document.getElementById('filter-skill');
+  const filterRating = document.getElementById('filter-rating');
+  const filterPriceMax = document.getElementById('filter-price-max');
+  const filterAvailability = document.getElementById('filter-availability');
+
+  function renderWorkersList(filteredWorkers) {
+    workersListEl.innerHTML = '';
+    if(filteredWorkers.length === 0) {
+      noResultsEl.hidden = false;
+      return;
+    } else {
+      noResultsEl.hidden = true;
+    }
+
+    filteredWorkers.forEach(w => {
+      const distText = userLocation ? `${w.distance.toFixed(1)} km away` : 'Location unknown';
+
+      const availabilityColor = w.availability === 'Available' ? '#146d32' : '#bf3d3d';
+
+      const workerEl = document.createElement('article');
+      workerEl.className = 'worker-card';
+      workerEl.setAttribute('tabindex', '0');
+      workerEl.setAttribute('aria-label', `${w.name}, skill: ${w.skill}, rating: ${w.rating} stars, price ${w.price} per hour, availability ${w.availability}, distance: ${distText}`);
+
+      workerEl.innerHTML = `
+        <h2 class="worker-name">${w.name}</h2>
+        <div class="worker-skill-category"><strong>Skill:</strong> ${w.skill}</div>
+        <div class="worker-rating"><strong>Rating:</strong> ${w.rating} ★</div>
+        <div class="worker-price"><strong>Price:</strong> PKR ${w.price}/hr</div>
+        <div class="worker-availability" style="color:${availabilityColor};"><strong>Availability:</strong> ${w.availability}</div>
+        <div class="worker-distance"><strong>Distance:</strong> ${distText}</div>
+        <div class="button-group">
+          <button class="action-button booking-button">Book Now</button>
+          <button class="action-button chat-button">Chat</button>
+          <button class="action-button feedback-button">Feedback</button>
+        </div>
+      `;
+
+      // Booking event
+      workerEl.querySelector('.booking-button').addEventListener('click', () => {
+        alert(`Booking initiated for ${w.name} (${w.skill}). You will be contacted soon.`);
+      });
+
+      // Chat event
+      workerEl.querySelector('.chat-button').addEventListener('click', () => {
+        openChatModal(w);
+      });
+
+      // Feedback event
+      workerEl.querySelector('.feedback-button').addEventListener('click', () => {
+        openFeedbackModal(w);
+      });
+
+      workersListEl.appendChild(workerEl);
+    });
+  }
+
+  function applyFilters() {
+    let filtered = [...workers];
+
+    const skillVal = filterSkill.value;
+    const minRating = parseFloat(filterRating.value);
+    const maxPrice = parseFloat(filterPriceMax.value);
+    const availabilityVal = filterAvailability.value;
+
+    if(skillVal) filtered = filtered.filter(w => w.skill === skillVal);
+    if(!isNaN(minRating)) filtered = filtered.filter(w => w.rating >= minRating);
+    if(!isNaN(maxPrice)) filtered = filtered.filter(w => w.price <= maxPrice);
+    if(availabilityVal) filtered = filtered.filter(w => w.availability === availabilityVal);
+
+    if(userLocation) {
+      filtered.forEach(w => {
+        w.distance = getDistanceKm(userLocation.latitude, userLocation.longitude, w.lat, w.lng);
+      });
+      filtered.sort((a, b) => a.distance - b.distance);
+    }
+
+    renderWorkersList(filtered);
+  }
+
+  filterSkill.addEventListener('change', applyFilters);
+  filterRating.addEventListener('change', applyFilters);
+  filterPriceMax.addEventListener('input', applyFilters);
+  filterAvailability.addEventListener('change', applyFilters);
+
+  // Geolocation
+  function geoSuccess(position) {
+    userLocation = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude
+    };
+    applyFilters();
+  }
+  function geoError(err) {
+    console.warn("Geolocation error:", err.message);
+    applyFilters();
+  }
+  if (navigator.geolocation) navigator.geolocation.getCurrentPosition(geoSuccess, geoError, {timeout:10000});
+  else applyFilters();
+
+  // Initial render without filters/user loc
+  renderWorkersList(workers);
+
+  // Modal handling
+  const modalBg = document.getElementById('modal-bg');
+  const modalTitle = document.getElementById('modal-title');
+  const modalCloseBtn = modalBg.querySelector('.modal-close');
+
+  // Chat elements
+  const chatSection = document.getElementById('chat-section');
+  const chatMessagesEl = document.getElementById('chat-messages');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+
+  // Feedback elements
+  const feedbackSection = modalBg.querySelector('.feedback-section');
+  const feedbackTextarea = document.getElementById('feedback-textarea');
+  const feedbackSubmitBtn = document.getElementById('feedback-submit');
+  const feedbackRatingInputs = feedbackSection.querySelectorAll('input[name="feedback-rating"]');
+  const feedbackListEl = document.getElementById('feedback-list');
+
+  let currentWorker = null;
+
+  // Simulate logged-in client id
+  const clientId = 'client-unique-id';
+
+  // Storage keys helpers
+  function getChatKey(workerId) {
+    return `chat_worker_${workerId}_client_${clientId}`;
+  }
+  function getFeedbackKey(workerId) {
+    return `feedback_worker_${workerId}`;
+  }
+
+  // Load chat history from localStorage
+  function loadChatMessages(workerId) {
+    const key = getChatKey(workerId);
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : [];
+  }
+
+  // Save chat history to localStorage
+  function saveChatMessages(workerId, messages) {
+    const key = getChatKey(workerId);
+    localStorage.setItem(key, JSON.stringify(messages));
+  }
+
+  // Load feedback list from localStorage
+  function loadFeedbackList(workerId) {
+    const key = getFeedbackKey(workerId);
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : [];
+  }
+
+  // Save feedback list to localStorage
+  function saveFeedbackList(workerId, feedbacks) {
+    const key = getFeedbackKey(workerId);
+    localStorage.setItem(key, JSON.stringify(feedbacks));
+  }
+
+  // Render chat messages UI
+  function renderChatMessages(messages) {
+    chatMessagesEl.innerHTML = '';
+    if (messages.length === 0) {
+      const emptyNote = document.createElement('div');
+      emptyNote.textContent = 'No messages yet. Start the conversation!';
+      emptyNote.style.fontStyle = 'italic';
+      chatMessagesEl.appendChild(emptyNote);
+      return;
+    }
+    messages.forEach(msg => {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message ' + (msg.sender === 'client' ? 'client' : 'worker');
+      msgDiv.textContent = msg.text;
+      chatMessagesEl.appendChild(msgDiv);
+    });
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+  }
+
+  // Render worker feedback list UI
+  function renderFeedbackList(feedbacks) {
+    feedbackListEl.innerHTML = '';
+    if (feedbacks.length === 0) {
+      feedbackListEl.textContent = 'No feedback yet.';
+      return;
+    }
+    feedbacks.forEach(fb => {
+      const fbItem = document.createElement('div');
+      fbItem.className = 'feedback-list-item';
+      fbItem.innerHTML = `
+        <strong>Rating:</strong> ${fb.rating} ★<br/>
+        ${fb.text ? `<em>${fb.text}</em>` : ''}
+      `;
+      feedbackListEl.appendChild(fbItem);
+    });
+  }
+
+  // Open Chat Modal (shows chat only)
+  function openChatModal(worker) {
+    currentWorker = worker;
+    modalTitle.textContent = `Chat with ${worker.name}`;
+    modalBg.hidden = false;
+    modalBg.classList.add('active');
+
+    chatSection.style.display = 'flex';
+    feedbackSection.style.display = 'none';
+
+    // Load chat messages
+    const messages = loadChatMessages(worker.id);
+    renderChatMessages(messages);
+
+    chatInput.value = '';
+    chatInput.focus();
+  }
+
+  // Open Feedback Modal (shows feedback form and past feedback)
+  function openFeedbackModal(worker) {
+    currentWorker = worker;
+    modalTitle.textContent = `Feedback for ${worker.name}`;
+    modalBg.hidden = false;
+    modalBg.classList.add('active');
+
+    chatSection.style.display = 'none';
+    feedbackSection.style.display = 'block';
+
+    feedbackTextarea.value = '';
+    feedbackRatingInputs.forEach(radio => radio.checked = false);
+    feedbackRatingInputs[feedbackRatingInputs.length -1].checked = true; // Default 5 stars
+
+    // Load feedback list
+    const feedbacks = loadFeedbackList(worker.id);
+    renderFeedbackList(feedbacks);
+
+    feedbackTextarea.focus();
+  }
+
+  // Close modal
+  modalCloseBtn.addEventListener('click', () => {
+    modalBg.classList.remove('active');
+    setTimeout(() => {
+      modalBg.hidden = true;
+      // Clear current worker reference to avoid stale data
+      currentWorker = null;
+    }, 250);
+  });
+
+  // Handle chat send
+  chatForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!currentWorker) return;
+
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    const messages = loadChatMessages(currentWorker.id);
+    messages.push({ sender: 'client', text });
+    // Simulate worker reply after 1s (for demonstration)
+    setTimeout(() => {
+      messages.push({ sender: 'worker', text: 'Thank you for your message. I will get back to you soon.' });
+      saveChatMessages(currentWorker.id, messages);
+      renderChatMessages(messages);
+    }, 1000);
+
+    saveChatMessages(currentWorker.id, messages);
+    renderChatMessages(messages);
+
+    chatInput.value = '';
+  });
+
+  // Handle feedback submission
+  feedbackSubmitBtn.addEventListener('click', () => {
+    if (!currentWorker) return;
+
+    const text = feedbackTextarea.value.trim();
+    const ratingRadio = [...feedbackRatingInputs].find(radio => radio.checked);
+    const rating = ratingRadio ? parseInt(ratingRadio.value) : 5;
+
+    if (rating < 1 || rating > 5) {
+      alert('Please select a valid rating.');
+      return;
+    }
+
+    const feedbacks = loadFeedbackList(currentWorker.id);
+    feedbacks.unshift({ rating, text }); // newest first
+    saveFeedbackList(currentWorker.id, feedbacks);
+    renderFeedbackList(feedbacks);
+
+    feedbackTextarea.value = '';
+    feedbackRatingInputs.forEach(radio => radio.checked = false);
+    feedbackRatingInputs[feedbackRatingInputs.length -1].checked = true;
+
+    alert('Thank you for your feedback!');
+  });
+
+  // Language toggle
+  const toggleLangBtn = document.getElementById('toggle-lang');
+  let inEnglish = true;
+  toggleLangBtn.addEventListener('click', () => {
+    const body = document.body;
+    if (inEnglish) {
+      body.setAttribute('lang', 'ur');
+
+      document.getElementById('title').textContent = 'لیبر لائن کلائنٹ ڈیش بورڈ';
+      document.getElementById('subtitle').textContent = 'قریبی مزدوروں کو مہارت، درجہ بندی، قیمت، اور دستیابی کی بنیاد پر تلاش اور بک کریں۔';
+
+      document.getElementById('label-filter-skill').textContent = 'مہارت کی قسم';
+      filterSkill.innerHTML = `
+        <option value="">تمام مہارتیں</option>
+        <option value="Plumbing">پلمنگ</option>
+        <option value="Electrical">الیکٹریکل</option>
+        <option value="Carpentry">کارپینٹری</option>
+        <option value="Cleaning">صفائی</option>
+        <option value="Painting">رنگ کاری</option>`;
+
+      document.getElementById('label-filter-rating').textContent = 'کم سے کم درجہ بندی';
+      filterRating.innerHTML = `
+        <option value="">کوئی نہیں</option>
+        <option value="1">1 ★</option>
+        <option value="2">2 ★</option>
+        <option value="3">3 ★</option>
+        <option value="4">4 ★</option>
+        <option value="5">5 ★</option>`;
+
+      document.getElementById('label-filter-price-max').textContent = 'زیادہ سے زیادہ قیمت (PKR/گھنٹہ)';
+      filterPriceMax.setAttribute('placeholder', 'زیادہ سے زیادہ نہیں');
+
+      document.getElementById('label-filter-availability').textContent = 'دستیابی';
+      filterAvailability.innerHTML = `
+        <option value="">کوئی نہیں</option>
+        <option value="Available">ابھی دستیاب</option>
+        <option value="Busy">مصروف</option>`;
+
+      noResultsEl.textContent = 'کوئی مزدور آپ کے فلٹر سے میل نہیں کھاتے۔';
+      toggleLangBtn.textContent = 'In English';
+
+      // Update booking buttons text
+      document.querySelectorAll('.booking-button').forEach(button => {
+        button.textContent = 'ابھی بک کریں';
+      });
+      document.querySelectorAll('.chat-button').forEach(button => {
+        button.textContent = 'چیٹ کریں';
+      });
+      document.querySelectorAll('.feedback-button').forEach(button => {
+        button.textContent = 'رائے دیں';
+      });
+
+      // Modal titles & feedback labels
+      if (modalBg.classList.contains('active')) {
+        if (chatSection.style.display !== 'none') {
+          modalTitle.textContent = currentWorker ? `سوال ${currentWorker.name} سے` : 'چیٹ کریں';
+        } else {
+          modalTitle.textContent = currentWorker ? `${currentWorker.name} کے لیے رائے` : 'رائے دیں';
+        }
+        document.querySelector('label[for="feedback-textarea"]').textContent = 'رائے چھوڑیں';
+        feedbackSubmitBtn.textContent = 'رائے جمع کروائیں';
+      }
+
+      inEnglish = false;
+    } else {
+      body.removeAttribute('lang');
+
+      document.getElementById('title').textContent = 'LaborLine Client Dashboard';
+      document.getElementById('subtitle').textContent = 'Find and book trusted workers based on skills, rating, price, and availability near you.';
+
+      document.getElementById('label-filter-skill').textContent = 'Skill Category';
+      filterSkill.innerHTML = `
+        <option value="">All Skills</option>
+        <option value="Plumbing">Plumbing</option>
+        <option value="Electrical">Electrical</option>
+        <option value="Carpentry">Carpentry</option>
+        <option value="Cleaning">Cleaning</option>
+        <option value="Painting">Painting</option>`;
+
+      document.getElementById('label-filter-rating').textContent = 'Min Rating';
+      filterRating.innerHTML = `
+        <option value="">Any</option>
+        <option value="1">1 ★</option>
+        <option value="2">2 ★</option>
+        <option value="3">3 ★</option>
+        <option value="4">4 ★</option>
+        <option value="5">5 ★</option>`;
+
+      document.getElementById('label-filter-price-max').textContent = 'Max Price (PKR/hr)';
+      filterPriceMax.setAttribute('placeholder', 'No max');
+
+      document.getElementById('label-filter-availability').textContent = 'Availability';
+      filterAvailability.innerHTML = `
+        <option value="">Any</option>
+        <option value="Available">Available Now</option>
+        <option value="Busy">Busy</option>`;
+
+      noResultsEl.textContent = 'No workers match your filters.';
+      toggleLangBtn.textContent = 'اردو میں';
+
+      document.querySelectorAll('.booking-button').forEach(button => {
+        button.textContent = 'Book Now';
+      });
+      document.querySelectorAll('.chat-button').forEach(button => {
+        button.textContent = 'Chat';
+      });
+      document.querySelectorAll('.feedback-button').forEach(button => {
+        button.textContent = 'Feedback';
+      });
+
+      // Modal titles & feedback labels
+      if (modalBg.classList.contains('active')) {
+        if (chatSection.style.display !== 'none') {
+          modalTitle.textContent = currentWorker ? `Chat with ${currentWorker.name}` : 'Chat';
+        } else {
+          modalTitle.textContent = currentWorker ? `Feedback for ${currentWorker.name}` : 'Feedback';
+        }
+        document.querySelector('label[for="feedback-textarea"]').textContent = 'Leave feedback';
+        feedbackSubmitBtn.textContent = 'Submit Feedback';
+      }
+
+      inEnglish = true;
+    }
+  });
+
+  // Accessibility: trap focus in modal when open
+  modalBg.addEventListener('keydown', e => {
+    if(e.key === 'Escape') {
+      modalCloseBtn.click();
+    }
+    // Trap focus inside modal
+    if(e.key === 'Tab') {
+      const focusables = modalBg.querySelectorAll('button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])');
+      const focusable = Array.prototype.filter.call(focusables, el => el.offsetParent !== null);
+      if(focusable.length === 0) return;
+
+      const firstEl = focusable[0];
+      const lastEl = focusable[focusable.length -1];
+
+      if(e.shiftKey) {
+        if(document.activeElement === firstEl) {
+          lastEl.focus();
+          e.preventDefault();
+        }
+      } else {
+        if(document.activeElement === lastEl) {
+          firstEl.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>
+

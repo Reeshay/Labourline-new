@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker Booking & Payment - LaborLine</title>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; background: #f1f9f6; direction: ltr; text-align: left; }
+    h1 { color: #0a3d2d; }
+    .booking-form { background: white; padding: 1rem; border-radius: 8px; max-width: 500px; margin: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    label { display: block; margin-top: 1rem; }
+    input, select { width: 100%; padding: 0.5rem; margin-top: 0.5rem; border-radius: 4px; border: 1px solid #ccc; }
+    .btn { margin-top: 1rem; padding: 0.5rem 1rem; background: #0a3d2d; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .summary { margin-top: 1.5rem; background: #e8f5f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Book a Worker</h1>
+
+  <div class="booking-form">
+    <label for="worker">Select Worker</label>
+    <select id="worker">
+      <option value="Ahmed Khan|500">Ahmed Khan - Plumbing (PKR 500/hr)</option>
+      <option value="Sara Malik|300">Sara Malik - Cleaning (PKR 300/hr)</option>
+    </select>
+
+    <label for="hours">Number of Hours</label>
+    <input type="number" id="hours" placeholder="e.g. 2" min="1">
+
+    <label for="date">Booking Date</label>
+    <input type="date" id="date">
+
+    <label for="payment-method">Payment Method</label>
+    <select id="payment-method">
+      <option>Cash on Service</option>
+      <option>Bank Transfer</option>
+      <option>Easypaisa</option>
+      <option>JazzCash</option>
+    </select>
+
+    <button class="btn" onclick="confirmBooking()">Confirm Booking</button>
+
+    <div class="summary" id="booking-summary" style="display:none;"></div>
+  </div>
+
+  <script>
+    function confirmBooking() {
+      const workerInfo = document.getElementById('worker').value.split('|');
+      const name = workerInfo[0];
+      const rate = parseInt(workerInfo[1]);
+      const hours = parseInt(document.getElementById('hours').value);
+      const date = document.getElementById('date').value;
+      const payment = document.getElementById('payment-method').value;
+
+      if (!hours || hours < 1 || !date) {
+        alert('Please enter valid booking details.');
+        return;
+      }
+
+      const total = hours * rate;
+      const summary = `
+        <h3>Booking Confirmed</h3>
+        <p><strong>Worker:</strong> ${name}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Hours:</strong> ${hours}</p>
+        <p><strong>Rate:</strong> PKR ${rate}/hr</p>
+        <p><strong>Total:</strong> <strong>PKR ${total}</strong></p>
+        <p><strong>Payment Method:</strong> ${payment}</p>
+      `;
+      const summaryBox = document.getElementById('booking-summary');
+      summaryBox.innerHTML = summary;
+      summaryBox.style.display = 'block';
+      alert('Booking confirmed successfully!');
+    }
+  </script>
+</body>
+</html>

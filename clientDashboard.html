@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard - LaborLine</title>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; background: #eef6f3; }
+    h1 { color: #0a3d2d; }
+    .filters, .worker-list { background: white; padding: 1rem; margin: 1rem 0;
+      border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    label { display: block; margin-top: 1rem; }
+    select, input[type=number] { width: 100%; padding: 0.5rem; margin-top: 0.5rem;
+      border-radius: 4px; border: 1px solid #ccc; }
+    .worker-card { border-bottom: 1px solid #ccc; padding: 1rem 0; }
+    .btn { padding: 0.5rem 1rem; background: #0a3d2d; color: white; border: none;
+      border-radius: 4px; cursor: pointer; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Client Dashboard</h1>
+
+  <section class="filters">
+    <h2>Find Workers</h2>
+
+    <label for="skill">Skill</label>
+    <select id="skill">
+      <option value="">All Skills</option>
+      <!-- expanded list -->
+      <option>Plumbing</option><option>Electrical</option><option>Cleaning</option>
+      <option>Carpentry</option><option>Masonry</option><option>Painting</option>
+      <option>Welding</option><option>Gardening</option><option>Cooking</option>
+      <option>Driving</option><option>Security</option><option>Tailoring</option>
+      <option>Baby-sitting</option><option>Pet Care</option>
+    </select>
+
+    <label for="rating">Minimum Rating</label>
+    <select id="rating">
+      <option value="">Any</option>
+      <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+    </select>
+
+    <label for="price">Max Price (PKR/hr)</label>
+    <input type="number" id="price" placeholder="e.g. 500">
+
+    <label for="availability">Availability</label>
+    <select id="availability">
+      <option value="">Any</option><option>Available</option><option>Busy</option>
+    </select>
+
+    <!-- NEW search button -->
+    <button class="btn" id="searchBtn">Search</button>
+  </section>
+
+  <section class="worker-list">
+    <h2>Available Workers</h2>
+
+    <div class="worker-card">
+      <p><strong>Name:</strong> Ahmed Khan</p>
+      <p><strong>Skill:</strong> Plumbing</p>
+      <p><strong>Rating:</strong> 4.8 ★</p>
+      <p><strong>Price:</strong> PKR 500/hr</p>
+      <p><strong>Availability:</strong> Available</p>
+      <button class="btn">Book</button>
+    </div>
+
+    <div class="worker-card">
+      <p><strong>Name:</strong> Sara Malik</p>
+      <p><strong>Skill:</strong> Cleaning</p>
+      <p><strong>Rating:</strong> 4.2 ★</p>
+      <p><strong>Price:</strong> PKR 300/hr</p>
+      <p><strong>Availability:</strong> Busy</p>
+      <button class="btn">Book</button>
+    </div>
+  </section>
+
+  <script>
+    /* redirect Book buttons (unchanged) */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.worker-card .btn').forEach(btn=>{
+        btn.addEventListener('click', () => location.href = 'bookingPayment.html');
+      });
+
+      /* NEW: wire up search button */
+      document.getElementById('searchBtn').addEventListener('click', filterCards);
+    });
+
+    /* NEW: simple filter function */
+    function filterCards() {
+      const skill = document.getElementById('skill').value;
+      const rating = Number(document.getElementById('rating').value || 0);
+      const price = Number(document.getElementById('price').value || Infinity);
+      const avail = document.getElementById('availability').value;
+
+      document.querySelectorAll('.worker-card').forEach(card => {
+        /* grab text from existing <p> lines */
+        const text = prop => card.querySelector(`p:contains("${prop}")`)?.textContent || '';
+        const cSkill = text('Skill:').split(':').pop().trim();
+        const cRating = Number(text('Rating:').match(/[\d.]+/) || 0);
+        const cPrice = Number(text('Price:').match(/\d+/) || 0);
+        const cAvail = text('Availability:').split(':').pop().trim();
+
+        const ok = (skill === '' || skill === cSkill) &&
+                   (cRating >= rating) &&
+                   (cPrice <= price) &&
+                   (avail === '' || avail === cAvail);
+
+        card.style.display = ok ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

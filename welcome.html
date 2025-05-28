@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome | Labour Line</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .welcome-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      max-width: 1100px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .text-section {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 280px;
+    }
+
+    .text-section h1 {
+      font-size: 36px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .text-section h2 {
+      font-size: 22px;
+      color: #16a085;
+      margin-bottom: 20px;
+    }
+
+    .text-section p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .animation-section {
+      flex: 1;
+      background: #e8f6f3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      min-width: 280px;
+    }
+
+    @media (max-width: 768px) {
+      .welcome-container {
+        flex-direction: column;
+      }
+
+      .text-section, .animation-section {
+        padding: 30px 20px;
+      }
+
+      .text-section h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-container">
+    <div class="text-section">
+      <h1>Welcome to Labour Line</h1>
+      <h2>The Uber of Blue-Collar Hiring</h2>
+      <p>
+        Empowering workers with real opportunities and delivering clients instantly trusted, location-smart, verified talent — seamlessly connecting labor demand and supply anytime, anywhere.
+      </p>
+    </div>
+    <div class="animation-section">
+      <div id="lottie-animation" style="width:100%; height:100%; max-width:400px;"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+  <script>
+    lottie.loadAnimation({
+      container: document.getElementById('lottie-animation'),
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'your-animation.json' // Replace with your actual animation file or URL
+    });
+  </script>
+</body>
+</html>

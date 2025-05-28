@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multiple Worker Profiles - LaborLine</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 1rem;
+      background: #e8f5f0;
+      color: #0a3d2d;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    form {
+      background: white;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    form h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin: 0.75rem 0 0.25rem;
+      font-weight: 600;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0a3d2d;
+      box-shadow: 0 0 5px #0a3d2d88;
+    }
+    button {
+      margin-top: 1rem;
+      background: #0a3d2d;
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      display: block;
+      width: 100%;
+    }
+    button:hover {
+      background: #06331d;
+    }
+
+    .profiles-container {
+      max-width: 900px;
+      margin: 0 auto 2rem auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 1.5rem;
+    }
+    .profile-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      padding: 1rem 1.25rem;
+      transition: box-shadow 0.3s ease;
+    }
+    .profile-card:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .profile-card h3 {
+      margin-top: 0;
+      color: #0a3d2d;
+      font-size: 1.4rem;
+    }
+    .profile-card p {
+      margin: 0.3rem 0;
+      font-size: 1rem;
+    }
+    .rating {
+      color: #f5a623;
+      font-weight: 700;
+    }
+    .availability {
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      color: white;
+      display: inline-block;
+      font-size: 0.9rem;
+    }
+    .available {
+      background-color: #2ecc71;
+    }
+    .busy {
+      background-color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>LaborLine Worker Profiles</h1>
+
+  <form id="workerForm" autocomplete="off">
+    <h2>Add New Worker Profile</h2>
+
+    <label for="name">Full Name *</label>
+    <input type="text" id="name" name="name" placeholder="Ahmed Khan" required />
+
+    <label for="phone">Phone Number *</label>
+    <input type="tel" id="phone" name="phone" placeholder="123-456-7890" pattern="[\d\-+\s()]{7,15}" required />
+
+    <label for="skill">Skill Category *</label>
+    <select id="skill" name="skill" required>
+      <option value="" disabled selected>Select skill</option>
+      <option value="Plumbing">Plumbing</option>
+      <option value="Electrician">Electrician</option>
+      <option value="Carpentry">Carpentry</option>
+      <option value="Painting">Painting</option>
+      <option value="Cleaning">Cleaning</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label for="rating">Rating (1 to 5) *</label>
+    <input type="number" id="rating" name="rating" min="1" max="5" step="0.1" placeholder="4.8" required />
+
+    <label for="price">Price (PKR/hr) *</label>
+    <input type="number" id="price" name="price" min="0" placeholder="500" required />
+
+    <label for="availability">Availability *</label>
+    <select id="availability" name="availability" required>
+      <option value="Available">Available</option>
+      <option value="Busy">Busy</option>
+    </select>
+
+    <button type="submit">Add Worker Profile</button>
+  </form>
+
+  <section class="profiles-container" id="profilesContainer">
+    <!-- Worker profiles will be appended here -->
+  </section>
+
+  <script>
+    const workerForm = document.getElementById('workerForm');
+    const profilesContainer = document.getElementById('profilesContainer');
+
+    const availabilityClassMap = {
+      'Available': 'available',
+      'Busy': 'busy'
+    };
+
+    // Function to create and display a profile card
+    function createProfileCard(worker) {
+      const card = document.createElement('article');
+      card.className = 'profile-card';
+
+      card.innerHTML = `
+        <h3>${worker.name}</h3>
+        <p><strong>Phone Number:</strong> ${worker.phone}</p>
+        <p><strong>Skill Category:</strong> ${worker.skill}</p>
+        <p><strong>Rating:</strong> <span class="rating">${worker.rating} ★</span></p>
+        <p><strong>Price:</strong> PKR ${worker.price}/hr</p>
+        <p><strong>Availability:</strong> <span class="availability ${availabilityClassMap[worker.availability]}">${worker.availability}</span></p>
+      `;
+
+      return card;
+    }
+
+    // Event handler for form submission
+    workerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Collect values
+      const newWorker = {
+        name: workerForm.name.value.trim(),
+        phone: workerForm.phone.value.trim(),
+        skill: workerForm.skill.value,
+        rating: parseFloat(workerForm.rating.value).toFixed(1),
+        price: parseInt(workerForm.price.value, 10),
+        availability: workerForm.availability.value
+      };
+
+      // Create new profile card
+      const profileCard = createProfileCard(newWorker);
+      profilesContainer.appendChild(profileCard);
+
+      // Reset the form for next input
+      workerForm.reset();
+
+      // Set focus back to name input
+      workerForm.name.focus();
+    });
+  </script>
+
+</body>
+</html>

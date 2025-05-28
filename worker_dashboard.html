@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local Labor Worker Dashboard - Pakistan</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e8f5f0;
+      color: #0a3d2d;
+    }
+    header {
+      background-color: #0a3d2d;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      padding: 1rem;
+    }
+    .sidebar {
+      flex: 1 1 250px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-right: 1rem;
+      text-align: center;
+    }
+    .sidebar img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      border: 3px solid #0a3d2d;
+    }
+    .sidebar h2 {
+      font-size: 1.5rem;
+      margin: 0.5rem 0;
+    }
+    .sidebar p {
+      font-size: 1rem;
+      margin: 0.3rem 0;
+    }
+    .sidebar .availability {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #0a3d2d;
+      font-size: 1.1rem;
+    }
+    .toggle-availability {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    .toggle-availability input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .toggle-availability label {
+      margin-left: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .section {
+      flex: 2 1 300px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    .job-list, .my-jobs, .payment-history {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .job-item, .job-status, .payment-item {
+      border-bottom: 1px solid #ccc;
+      padding: 0.5rem 0;
+      font-size: 1rem;
+    }
+    .job-item:last-child, .job-status:last-child, .payment-item:last-child {
+      border-bottom: none;
+    }
+    .job-item button, .payment-item button {
+      background-color: #0a3d2d;
+      color: white;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-size: 0.9rem;
+    }
+    .job-item button:hover, .payment-item button:hover {
+      background-color: #06331d;
+    }
+    .chat {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      margin-top: 1rem;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .chat h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .chat textarea {
+      width: 100%;
+      height: 80px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      resize: none;
+      font-size: 1rem;
+    }
+    .chat button {
+      background-color: #0a3d2d;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background-color 0.3s;
+      font-size: 1rem;
+    }
+    .chat button:hover {
+      background-color: #06331d;
+    }
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        margin-right: 0;
+        margin-bottom: 1rem;
+        max-width: 100%;
+      }
+      .section {
+        max-width: 100%;
+      }
+      .chat {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<nav id="global-nav" style="text-align:right;padding:0.5rem;background:#f0f0f0;"><button onclick="go('welcome')">Home</button><button onclick="logout()">Logout</button></nav>
+
+  <header>
+    <h1>Local Labor Worker Dashboard - Pakistan</h1>
+  </header>
+<div id="profile-section" style="padding:1rem;"></div>
+
+  <div class="container">
+    <div class="sidebar">
+      <img src="https://i.postimg.cc/TYf9MTVF/pak-worker.jpg" alt="Worker Photo" />
+      <h2>Faisal Ahmed</h2>
+      <p>Skills: Plumbing, Electrical</p>
+      <div class="availability">
+        Availability: <span id="availability-status">Available</span>
+      </div>
+      <div class="toggle-availability">
+        <input type="checkbox" id="availability-toggle" />
+        <label for="availability-toggle">Set as Busy</label>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Job Listings</h2>
+      <ul class="job-list">
+        <li class="job-item">
+          <strong>Plumbing Job</strong> - Location: Lahore - Wage: PKR 1000/hr
+          <button>Apply</button>
+        </li>
+        <li class="job-item">
+          <strong>Electrical Repair</strong> - Location: Karachi - Wage: PKR 1200/hr
+          <button>Apply</button>
+        </li>
+        <li class="job-item">
+          <strong>Carpentry Work</strong> - Location: Islamabad - Wage: PKR 900/hr
+          <button>Apply</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>My Jobs</h2>
+      <ul class="my-jobs">
+        <li class="job-status">
+          <strong>Current Job:</strong> Plumbing Job - Status: In Progress
+        </li>
+        <li class="job-status">
+          <strong>Upcoming Job:</strong> Electrical Repair - Status: Scheduled
+        </li>
+        <li class="job-status">
+          <strong>Completed Job:</strong> Carpentry Work - Status: Completed
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Earnings & Payment History</h2>
+      <div>Total Earnings: PKR 75,000</div>
+      <div>Last Payment Received: PKR 30,000</div>
+      <h3>Payment History</h3>
+      <ul class="payment-history">
+        <li class="payment-item">Payment of PKR 30,000 on 2024-04-15</li>
+        <li class="payment-item">Payment of PKR 45,000 on 2024-03-30</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chat">
+    <h2>Client Communication</h2>
+    <textarea placeholder="Type your message here..."></textarea>
+    <button>Send Message</button>
+  </div>
+
+  <script>
+    const availabilityToggle = document.getElementById('availability-toggle');
+    const availabilityStatus = document.getElementById('availability-status');
+
+    availabilityToggle.addEventListener('change', () => {
+      if (availabilityToggle.checked) {
+        availabilityStatus.innerText = 'Busy';
+      } else {
+        availabilityStatus.innerText = 'Available';
+      }
+    });
+  </script>
+
+
+    <script>
+    
+/* ------- Mini router & session util (LabourLine) ------- */
+function go(page){ location.href = page + '.html'; }
+const DASHBOARD = { admin:'AdminDashboard', user:'clientDashboard', worker:'worker_dashboard' };
+function setUser(u){ localStorage.setItem('ll_user', JSON.stringify(u)); }
+function getUser(){ return JSON.parse(localStorage.getItem('ll_user')||'null'); }
+function logout(){ localStorage.removeItem('ll_user'); go('index'); }
+
+    const me = getUser();
+    if(!me || me.role!=='worker'){ go(me ? DASHBOARD[me.role] : 'index'); }
+
+    const SKILLS = ["Plumber", "Electrician", "Carpenter", "Mason", "Painter", "Welder", "Mechanic", "Gardener", "House Cleaner", "Driver", "Security Guard", "HVAC Technician", "Tailor", "Chef", "General Labour"];
+
+    function loadProfile(){
+        const key = 'll_profile_'+me.email;
+        const prof = JSON.parse(localStorage.getItem(key) || 'null');
+        const sec = document.getElementById('profile-section');
+        if(!sec) return;
+
+        if(prof){
+            sec.innerHTML = `
+                <section class="sidebar">
+                    <h2>${prof.name}</h2>
+                    <p><strong>Location:</strong> ${prof.location}</p>
+                    <p><strong>Skills:</strong> ${prof.skills.join(', ')}</p>
+                    <button onclick="editProfile()">Edit Profile</button>
+                </section>`;
+        }else{
+            sec.innerHTML = `
+                <h2>Create your profile</h2>
+                <form id="profile-form">
+                    <input type="text" id="name" placeholder="Full name" required><br>
+                    <input type="text" id="phone" placeholder="Phone" required><br>
+                    <input type="text" id="location" placeholder="Location" required><br>
+                    <label>Select your skills:</label><br><select id=\"skills\" multiple size=\"6\" required><option value=\"Plumber\">Plumber</option>
+<option value=\"Electrician\">Electrician</option>
+<option value=\"Carpenter\">Carpenter</option>
+<option value=\"Mason\">Mason</option>
+<option value=\"Painter\">Painter</option>
+<option value=\"Welder\">Welder</option>
+<option value=\"Mechanic\">Mechanic</option>
+<option value=\"Gardener\">Gardener</option>
+<option value=\"House Cleaner\">House Cleaner</option>
+<option value=\"Driver\">Driver</option>
+<option value=\"Security Guard\">Security Guard</option>
+<option value=\"HVAC Technician\">HVAC Technician</option>
+<option value=\"Tailor\">Tailor</option>
+<option value=\"Chef\">Chef</option>
+<option value=\"General Labour\">General Labour</option></select><br><small>Hold Ctrl (Cmd) to pick multiple</small><br>
+                    <button type="submit">Save Profile</button>
+                </form>`;
+            document.getElementById('profile-form').addEventListener('submit', saveProfile);
+        }
+    }
+
+    function saveProfile(e){
+        e.preventDefault();
+        const sel = Array.from(document.getElementById('skills').selectedOptions).map(o=>o.value);
+        const prof = {
+            name: document.getElementById('name').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            location: document.getElementById('location').value.trim(),
+            skills: sel.length ? sel : ['General Labour'],
+            email: me.email
+        };
+        localStorage.setItem('ll_profile_'+me.email, JSON.stringify(prof));
+
+        let wlist = JSON.parse(localStorage.getItem('ll_workers') || '[]');
+        const idx = wlist.findIndex(w=>w.email===me.email);
+        if(idx>=0) wlist[idx] = prof; else wlist.push(prof);
+        localStorage.setItem('ll_workers', JSON.stringify(wlist));
+        loadProfile();
+    }
+
+    function editProfile(){
+        localStorage.removeItem('ll_profile_'+me.email);
+        loadProfile();
+    }
+
+    window.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - LaborLine</title>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; background: #f7fdfc; }
+    h1 { color: #0a3d2d; }
+    .tabs { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    .tab-btn { padding: 0.5rem 1rem; border: none; background: #0a3d2d; color: white; cursor: pointer; border-radius: 4px; }
+    .tab-btn.active { background: #14814b; }
+    .section { display: none; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .section.active { display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.75rem; border: 1px solid #ccc; text-align: left; }
+    th { background: #e0f2f1; }
+    .remove-btn { background: #bf3d3d; color: white; border: none; padding: 0.4rem 0.8rem; cursor: pointer; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<nav id="global-nav" style="text-align:right;padding:0.5rem;background:#f0f0f0;"><button onclick="go('welcome')">Home</button><button onclick="logout()">Logout</button></nav>
+  <h1>Admin Dashboard</h1>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('workers')">Workers</button>
+    <button class="tab-btn" onclick="switchTab('clients')">Clients</button>
+  </div>
+
+  <div id="workers" class="section active">
+    <h2>Manage Workers</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Skill</th><th>Rating</th><th>Price</th><th>Availability</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="worker-table-body"></tbody>
+    </table>
+  </div>
+
+  <div id="clients" class="section">
+    <h2>Registered Clients</h2>
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Email</th></tr>
+      </thead>
+      <tbody id="client-table-body"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const workers = [
+      { name: "Ahmed Khan", skill: "Plumbing", rating: 4.8, price: 500, availability: "Available" },
+      { name: "Sara Malik", skill: "Cleaning", rating: 4.2, price: 300, availability: "Busy" }
+    ];
+
+    const clients = [
+      { name: "Fatima Aslam", email: "fatima@example.com" },
+      { name: "Naveed Hassan", email: "naveed@example.com" }
+    ];
+
+    function renderWorkers() {
+      const tbody = document.getElementById("worker-table-body");
+      tbody.innerHTML = "";
+      workers.forEach((w, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${w.name}</td>
+          <td>${w.skill}</td>
+          <td>${w.rating}</td>
+          <td>${w.price}</td>
+          <td>${w.availability}</td>
+          <td><button class="remove-btn" onclick="removeWorker(${index})">Remove</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function renderClients() {
+      const tbody = document.getElementById("client-table-body");
+      tbody.innerHTML = "";
+      clients.forEach(c => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${c.name}</td><td>${c.email}</td>`;
+        tbody.appendChild(row);
+      });
+    }
+
+    function removeWorker(index) {
+      if (confirm(`Are you sure you want to remove ${workers[index].name}?`)) {
+        workers.splice(index, 1);
+        renderWorkers();
+      }
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    }
+
+    // Initial render
+    renderWorkers();
+    renderClients();
+  </script>
+
+    <script>
+    
+/* ------- Mini router & session util (LabourLine) ------- */
+function go(page){ location.href = page + '.html'; }
+const DASHBOARD = { admin:'AdminDashboard', user:'clientDashboard', worker:'worker_dashboard' };
+function setUser(u){ localStorage.setItem('ll_user', JSON.stringify(u)); }
+function getUser(){ return JSON.parse(localStorage.getItem('ll_user')||'null'); }
+function logout(){ localStorage.removeItem('ll_user'); go('index'); }
+
+    const me = getUser();
+    if(!me || me.role!=='admin'){ go(me ? DASHBOARD[me.role] : 'index'); }
+
+    function showWorkers(){
+        const tbl = document.getElementById('workers-table');
+        const workers = JSON.parse(localStorage.getItem('ll_workers') || '[]');
+        if(workers.length===0){ tbl.innerHTML = '<p>No worker profiles yet.</p>'; return; }
+        tbl.innerHTML = workers.map(w=>`<div style="border-bottom:1px solid #ddd;padding:0.5rem;"><strong>${w.name}</strong> – ${w.location} – ${w.skills.join(', ')}</div>`).join('');
+    }
+    window.addEventListener('DOMContentLoaded', showWorkers);
+    </script>
+    
+</body>
+</html>
